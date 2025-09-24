@@ -9,6 +9,8 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] private int width = 10;
     [SerializeField] private int height = 10;
     [SerializeField] private int heightUnderSurface = 10;
+    [SerializeField] private float scale = 1;
+
 
 
 
@@ -30,7 +32,7 @@ public class MarchingCubes : MonoBehaviour
         if (loopStart) StartCoroutine(StartAll());
         else {
             setHeights();
-            marchCubes();
+            MarchCubes();
             SetMesh();
         }
 
@@ -41,19 +43,19 @@ public class MarchingCubes : MonoBehaviour
         while (true)
         {
             setHeights();
-            marchCubes();
+            MarchCubes();
             SetMesh();
             yield return new WaitForSeconds(1f);
         }
     }
 
-    private void marchCubes() {
+    private void MarchCubes() {
         verts.Clear();
         triangles.Clear();
 
         
         for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++) 
+            for (int y = 0; y < height + heightUnderSurface; y++) 
                 for (int z = 0; z < width; z++) {
                 
                     float[] cubeCorners = new float[8];
@@ -79,6 +81,8 @@ public class MarchingCubes : MonoBehaviour
                 }
                 Vector3 edgeStart = pos + MarchingCubesTables.Edges[triTableVal, 0];
                 Vector3 edgeEnd = pos + MarchingCubesTables.Edges[triTableVal, 1];
+                edgeEnd *= scale;
+                edgeStart *= scale;
 
                 Vector3 vertex = (edgeStart + edgeEnd) / 2;
 
@@ -115,10 +119,10 @@ public class MarchingCubes : MonoBehaviour
 
 
     private void setHeights() {
-        heights = new float[width + 1, height +1, width +1];
+        heights = new float[width + 1, height + heightUnderSurface +1, width +1];
 
         for (int x = 0; x < width + 1; x++)
-            for (int y = 0; y < height + 1; y++) 
+            for (int y = 0; y < height + heightUnderSurface + 1; y++) 
                 for (int z = 0; z < width + 1; z++) {
                     float currentHeight = Mathf.PerlinNoise(x*noiseResolution, z*noiseResolution) * height;
                     float newHeight;
