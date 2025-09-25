@@ -24,6 +24,8 @@ public class MarchingCubes : MonoBehaviour
     private MeshCollider meshCollider;
 
     private MeshFilter meshFilter;
+    private CubeChunks chunk;
+    private Vector2Int ind;
     void Start(){
         meshFilter = GetComponent<MeshFilter>();
         if (loopStart) StartCoroutine(StartAll());
@@ -36,19 +38,21 @@ public class MarchingCubes : MonoBehaviour
     }
     void init()
     {
+        chunk = GetComponentInParent<CubeChunks>();
         meshFilter = GetComponent<MeshFilter>();
         setHeights();
         MarchCubes();
         SetMesh();
     }
 
-    public void SetDimensions(int width, int height, int heightUnder, float scale)
+    public void SetDimensions(int width, int height, int heightUnder, float scale, Vector2Int ind)
     {
         init();
         this.width = width;
         this.height = height;
         this.heightUnderSurface = heightUnder;
         this.scale = scale;
+        this.ind = ind;
         setHeights();
         MarchCubes();
         SetMesh();
@@ -176,7 +180,8 @@ private void setHeights()
                 }
     }
 
-    public void Dig(Vector3 worldPosition, float radius, float strength)
+
+    public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
         if (heights == null) return;
         if (radius <= 0f) return;
@@ -192,43 +197,30 @@ private void setHeights()
         int minZ = Mathf.Max(0, Mathf.FloorToInt(localPos.z - radiusInCells));
         int maxZ = Mathf.Min(heights.GetLength(2) - 1, Mathf.CeilToInt(localPos.z + radiusInCells));
 
+        // --- neighbour propagation ---
+        if (!fromNeighbour)
+        {
+            if (minX <= 0) chunk.DigNeighbour(ind, -1, 0, worldPosition, radius, strength);
+            if (maxX >= width) chunk.DigNeighbour(ind, +1, 0, worldPosition, radius, strength);
+            if (minZ <= 0) chunk.DigNeighbour(ind, 0, 1, worldPosition, radius, strength);
+            if (maxZ >= width) chunk.DigNeighbour(ind, 0, -1, worldPosition, radius, strength);
+        }
+
+
+        // --- modify current chunk ---
         for (int x = minX; x <= maxX; x++)
         {
             for (int y = minY; y <= maxY; y++)
             {
                 for (int z = minZ; z <= maxZ; z++)
                 {
+                    if (z == 0 || z == height + heightUnderSurface)
+                    {
+                        continue;
+                    }
                     float dx = x - localPos.x;
                     float dy = y - localPos.y;
                     float dz = z - localPos.z;
-
-                    if (x == 0)
-                    {
-                        Debug.Log("Left edge reached at " + new Vector3(x, y, z));
-                    }
-                    else if (x == width)
-                    {
-                        Debug.Log("Right edge reached at " + new Vector3(x, y, z));
-                    }
-
-                    if (y == 0)
-                    {
-                        Debug.Log("Top edge reached at " + new Vector3(x, y, z));
-                    }
-                    else if (y == height + heightUnderSurface)
-                    {
-                        Debug.Log("Bottom edge reached at " + new Vector3(x, y, z));
-                        continue;
-                    }
-
-                    if (z == 0)
-                    {
-                        Debug.Log("Front edge reached at " + new Vector3(x, y, z));
-                    }
-                    else if (z == width)
-                    {
-                        Debug.Log("Back edge reached at " + new Vector3(x, y, z));
-                    }
 
                     float distSq = dx * dx + dy * dy + dz * dz;
                     if (distSq > radiusSq) continue;
@@ -244,6 +236,8 @@ private void setHeights()
         MarchCubes();
         SetMesh();
     }
+
+
 
 
 }
