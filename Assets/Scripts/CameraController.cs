@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
                 Collider[] colliders = Physics.OverlapSphere(hit.point, digRadius);
                 foreach (Collider c in colliders)
                 {
-                    Debug.Log(c.gameObject.name);
+                    //Debug.Log(c.gameObject.name);
                     MarchingCubes mc = c.GetComponent<MarchingCubes>();
                     if (mc != null)
                     {

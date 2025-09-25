@@ -201,6 +201,35 @@ private void setHeights()
                     float dx = x - localPos.x;
                     float dy = y - localPos.y;
                     float dz = z - localPos.z;
+
+                    if (x == 0)
+                    {
+                        Debug.Log("Left edge reached at " + new Vector3(x, y, z));
+                    }
+                    else if (x == width)
+                    {
+                        Debug.Log("Right edge reached at " + new Vector3(x, y, z));
+                    }
+
+                    if (y == 0)
+                    {
+                        Debug.Log("Top edge reached at " + new Vector3(x, y, z));
+                    }
+                    else if (y == height + heightUnderSurface)
+                    {
+                        Debug.Log("Bottom edge reached at " + new Vector3(x, y, z));
+                        continue;
+                    }
+
+                    if (z == 0)
+                    {
+                        Debug.Log("Front edge reached at " + new Vector3(x, y, z));
+                    }
+                    else if (z == width)
+                    {
+                        Debug.Log("Back edge reached at " + new Vector3(x, y, z));
+                    }
+
                     float distSq = dx * dx + dy * dy + dz * dz;
                     if (distSq > radiusSq) continue;
 
