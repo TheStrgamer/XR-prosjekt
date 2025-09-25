@@ -34,6 +34,25 @@ public class MarchingCubes : MonoBehaviour
         }
 
     }
+    void init()
+    {
+        meshFilter = GetComponent<MeshFilter>();
+        setHeights();
+        MarchCubes();
+        SetMesh();
+    }
+
+    public void SetDimensions(int width, int height, int heightUnder, float scale)
+    {
+        init();
+        this.width = width;
+        this.height = height;
+        this.heightUnderSurface = heightUnder;
+        this.scale = scale;
+        setHeights();
+        MarchCubes();
+        SetMesh();
+    }
 
     private IEnumerator StartAll()
     {
@@ -129,10 +148,13 @@ private void setHeights()
         {
             for (int z = 0; z < width + 1; z++)
             {
-                float worldY = y * scale;
-                float terrainHeight = Mathf.PerlinNoise(x * noiseResolution, z * noiseResolution) * height;
+                float worldY = y * scale + transform.position.y;
+                float wx = x * scale + transform.position.x;
+                float wz = z * scale - transform.position.z;
+
+                float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height;
                 float density = terrainHeight - worldY;
-                density += (Mathf.PerlinNoise(x * noiseResolution * 0.5f, z * noiseResolution * 0.5f) - 0.5f) * 5f;
+                density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
 
                 heights[x, y, z] = density;
             }
