@@ -197,7 +197,6 @@ private void setHeights()
         int minZ = Mathf.Max(0, Mathf.FloorToInt(localPos.z - radiusInCells));
         int maxZ = Mathf.Min(heights.GetLength(2) - 1, Mathf.CeilToInt(localPos.z + radiusInCells));
 
-        // --- neighbour propagation ---
         if (!fromNeighbour)
         {
             if (minX <= 0) chunk.DigNeighbour(ind, -1, 0, worldPosition, radius, strength);
@@ -207,14 +206,13 @@ private void setHeights()
         }
 
 
-        // --- modify current chunk ---
         for (int x = minX; x <= maxX; x++)
         {
             for (int y = minY; y <= maxY; y++)
             {
                 for (int z = minZ; z <= maxZ; z++)
                 {
-                    if (z == 0 || z == height + heightUnderSurface)
+                    if (y == 0 || y == height + heightUnderSurface)
                     {
                         continue;
                     }

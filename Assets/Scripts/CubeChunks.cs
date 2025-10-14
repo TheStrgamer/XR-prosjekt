@@ -32,7 +32,7 @@ public class CubeChunks : MonoBehaviour
     public void DigNeighbour(Vector2Int ind, int dx, int dz, Vector3 digOrigin, float radius, float strength) {
         int x = ind.x + dx;
         int z = ind.y + dz;
-        if (x < 0 || x> chunksX || z < 0 || z>chunksZ)
+        if (x < 0 || x >= chunksX || z < 0 || z >= chunksZ)
         {
             return;
         }
