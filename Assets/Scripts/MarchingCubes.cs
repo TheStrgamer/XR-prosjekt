@@ -154,10 +154,10 @@ private void setHeights()
             {
                 float worldY = y * scale + transform.position.y;
                 float wx = x * scale + transform.position.x;
-                float wz = z * scale - transform.position.z;
+                float wz = z * scale + transform.position.z;
 
-                float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height;
-                float density = terrainHeight - worldY;
+                float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height + heightUnderSurface;
+                float density = worldY - terrainHeight + heightUnderSurface;
                 density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
 
                 heights[x, y, z] = density;
@@ -200,9 +200,9 @@ private void setHeights()
         if (!fromNeighbour)
         {
             if (minX <= 0) chunk.DigNeighbour(ind, -1, 0, worldPosition, radius, strength);
-            if (maxX >= width) chunk.DigNeighbour(ind, +1, 0, worldPosition, radius, strength);
-            if (minZ <= 0) chunk.DigNeighbour(ind, 0, 1, worldPosition, radius, strength);
-            if (maxZ >= width) chunk.DigNeighbour(ind, 0, -1, worldPosition, radius, strength);
+            if (maxX >= width) chunk.DigNeighbour(ind, 1, 0, worldPosition, radius, strength);
+            if (minZ <= 0) chunk.DigNeighbour(ind, 0, -1, worldPosition, radius, strength);
+            if (maxZ >= width) chunk.DigNeighbour(ind, 0, 1, worldPosition, radius, strength);
         }
 
 

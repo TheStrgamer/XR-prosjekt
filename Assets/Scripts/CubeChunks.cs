@@ -20,9 +20,9 @@ public class CubeChunks : MonoBehaviour
         {
             for (int z = 0; z < chunksZ; z++)
             {
-                Vector3 pos = transform.position + new Vector3(x * chunkWidth, 0, z * chunkWidth);
-                GameObject go = Instantiate(chunkPrefab, pos, Quaternion.Euler(180f, 0f, 0f), transform);
-                go.GetComponent<MarchingCubes>().SetDimensions(chunkWidth, chunkHeight, chunkHeightUnder, scale, new Vector2Int(x,z));
+                Vector3 pos = transform.position + new Vector3(x * chunkWidth * scale, -chunkHeightUnder, z * chunkWidth * scale);
+                GameObject go = Instantiate(chunkPrefab, pos, Quaternion.Euler(0f, 0f, 0f), transform);
+                go.GetComponent<MarchingCubes>().SetDimensions(chunkWidth+1, chunkHeight, chunkHeightUnder, scale, new Vector2Int(x,z));
                 chunks[x,z] = go;
                 
             }
