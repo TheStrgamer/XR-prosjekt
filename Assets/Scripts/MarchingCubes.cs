@@ -10,7 +10,7 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] private int height = 10;
     [SerializeField] private int heightUnderSurface = 10;
     [SerializeField] private float scale = 1;
-    [SerializeField] private float tresshold = 0.5f;
+    [SerializeField] private float threshold = 0.5f;
 
     [SerializeField] private float noiseResolution = 1;
     [SerializeField] private bool visualizeNoise;
@@ -113,7 +113,7 @@ public class MarchingCubes : MonoBehaviour
             float v1 = cubeCorners[c1];
             float v2 = cubeCorners[c2];
 
-            float t = Mathf.Clamp01(Mathf.InverseLerp(v1, v2, tresshold));
+            float t = Mathf.Clamp01(Mathf.InverseLerp(v1, v2, threshold));
             Vector3 vertex = Vector3.Lerp(edgeStart, edgeEnd, t);
 
             (int x, int y, int z, int e) key = (Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z), edge);
@@ -152,7 +152,7 @@ public class MarchingCubes : MonoBehaviour
     private int GetConfigIndex(float[] cubeCorners){
         int configIndex = 0;
         for (int i = 0; i < 8; i++){
-            if (cubeCorners[i] > tresshold){
+            if (cubeCorners[i] > threshold){
                 configIndex |= 1 << i;
             }
         }
