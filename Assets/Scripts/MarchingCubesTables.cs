@@ -14,8 +14,15 @@ public static class MarchingCubesTables
 		new Vector3Int(0, 1, 1)
 
 	};
+    public static readonly int[,] EdgeConnection = new int[12, 2]
+    {
+        {0,1}, {1,2}, {2,3}, {3,0},
+        {4,5}, {5,6}, {6,7}, {7,4},
+        {0,4}, {1,5}, {2,6}, {3,7}
+    };
 
-	public static Vector3[,] Edges = new Vector3[12, 2] {
+
+    public static Vector3[,] Edges = new Vector3[12, 2] {
 
 		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f) },
 		{ new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },

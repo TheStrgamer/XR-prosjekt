@@ -16,11 +16,11 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] private bool visualizeNoise;
     [SerializeField] private bool loopStart = false;
 
-
-
     private float[,,] heights;
 
     private List<Vector3> verts = new List<Vector3>();
+    Dictionary<(int x, int y, int z, int edge), int> edgeVertexCache;
+
     private List<int> triangles = new List<int>();
 
     private MeshCollider meshCollider;
@@ -28,6 +28,7 @@ public class MarchingCubes : MonoBehaviour
     private MeshFilter meshFilter;
     private CubeChunks chunk;
     private Vector2Int ind;
+
     void Start(){
         meshFilter = GetComponent<MeshFilter>();
         if (loopStart) StartCoroutine(StartAll());
@@ -70,51 +71,66 @@ public class MarchingCubes : MonoBehaviour
         }
     }
 
-    private void MarchCubes(){
+    private void MarchCubes()
+    {
         verts.Clear();
         triangles.Clear();
-
+        edgeVertexCache = new Dictionary<(int, int, int, int), int>();
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height + heightUnderSurface; y++)
-                for (int z = 0; z < width; z++){
-
+                for (int z = 0; z < width; z++)
+                {
                     float[] cubeCorners = new float[8];
-
-                    for (int i = 0; i < 8; i++){
+                    for (int i = 0; i < 8; i++)
+                    {
                         Vector3Int corner = new Vector3Int(x, y, z) + MarchingCubesTables.Corners[i];
                         cubeCorners[i] = heights[corner.x, corner.y, corner.z];
                     }
-                    MarchCube(new Vector3(x, y, z), GetConfigIndex(cubeCorners));
 
+                    MarchCube(new Vector3(x, y, z), GetConfigIndex(cubeCorners), cubeCorners);
                 }
     }
 
-    private void MarchCube(Vector3 pos, int index){
-        if (index == 0 || index == 255) return;
+    private void MarchCube(Vector3 pos, int configIndex, float[] cubeCorners)
+    {
+        if (configIndex == 0 || configIndex == 255) return;
 
         int edgeIndex = 0;
-        for (int t = 0; t < 5; t++)
-            for (int v = 0; v < 3; v++){
-                int triTableVal = MarchingCubesTables.triTable[index][edgeIndex];
-                if (triTableVal == -1){
-                    return;
-                }
-                Vector3 edgeStart = pos + MarchingCubesTables.Edges[triTableVal, 0];
-                Vector3 edgeEnd = pos + MarchingCubesTables.Edges[triTableVal, 1];
-                edgeEnd *= scale;
-                edgeStart *= scale;
 
-                Vector3 vertex = (edgeStart + edgeEnd) / 2;
+        while (MarchingCubesTables.triTable[configIndex][edgeIndex] != -1)
+        {
+            int edge = MarchingCubesTables.triTable[configIndex][edgeIndex];
 
+            int c1 = MarchingCubesTables.EdgeConnection[edge, 0];
+            int c2 = MarchingCubesTables.EdgeConnection[edge, 1];
+
+            Vector3 edgeStart = pos + MarchingCubesTables.Corners[c1];
+            Vector3 edgeEnd = pos + MarchingCubesTables.Corners[c2];
+            edgeEnd *= scale;
+            edgeStart *= scale;
+
+            float v1 = cubeCorners[c1];
+            float v2 = cubeCorners[c2];
+
+            float t = Mathf.Clamp01(Mathf.InverseLerp(v1, v2, tresshold));
+            Vector3 vertex = Vector3.Lerp(edgeStart, edgeEnd, t);
+
+            (int x, int y, int z, int e) key = (Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z), edge);
+            if (!edgeVertexCache.TryGetValue(key, out int vertIndex))
+            {
                 verts.Add(vertex);
-                triangles.Add(verts.Count - 1);
-
-                edgeIndex++;
+                vertIndex = verts.Count - 1;
+                edgeVertexCache[key] = vertIndex;
             }
+
+            triangles.Add(vertIndex);
+            edgeIndex++;
+        }
     }
 
-private void SetMesh()
+
+    private void SetMesh()
 {
     Mesh mesh = new Mesh();
     mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
