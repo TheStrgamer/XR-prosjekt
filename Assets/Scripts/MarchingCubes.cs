@@ -16,6 +16,8 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] private bool visualizeNoise;
     [SerializeField] private bool loopStart = false;
 
+
+
     private float[,,] heights;
 
     private List<Vector3> verts = new List<Vector3>();
@@ -61,7 +63,7 @@ public class MarchingCubes : MonoBehaviour
     private IEnumerator StartAll()
     {
         while (true){
-            setHeights();
+            //setHeights();
             MarchCubes();
             SetMesh();
             yield return new WaitForSeconds(1f);
@@ -180,6 +182,19 @@ private void setHeights()
                 }
     }
 
+    public void SetDensity(int x, int y, int z, float value)
+    {
+        if (x < 0 || x >= heights.GetLength(0)) return;
+        if (y < 0 || y >= heights.GetLength(1)) return;
+        if (z < 0 || z >= heights.GetLength(2)) return;
+        heights[x, y, z] = value;
+    }
+
+    private void DigNeighbour(int dx, int dz, Vector3 worldPos, float radius, float strength)
+    {
+        chunk.DigNeighbour(ind, dx, dz, worldPos, radius, strength);
+        chunk.SetNeightbourValue(ind, dx, dz);
+    }
 
     public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
@@ -196,15 +211,6 @@ private void setHeights()
         int maxY = Mathf.Min(heights.GetLength(1) - 1, Mathf.CeilToInt(localPos.y + radiusInCells));
         int minZ = Mathf.Max(0, Mathf.FloorToInt(localPos.z - radiusInCells));
         int maxZ = Mathf.Min(heights.GetLength(2) - 1, Mathf.CeilToInt(localPos.z + radiusInCells));
-
-        if (!fromNeighbour)
-        {
-            if (minX <= 0) chunk.DigNeighbour(ind, -1, 0, worldPosition, radius, strength);
-            if (maxX >= width) chunk.DigNeighbour(ind, 1, 0, worldPosition, radius, strength);
-            if (minZ <= 0) chunk.DigNeighbour(ind, 0, -1, worldPosition, radius, strength);
-            if (maxZ >= width) chunk.DigNeighbour(ind, 0, 1, worldPosition, radius, strength);
-        }
-
 
         for (int x = minX; x <= maxX; x++)
         {
@@ -231,11 +237,145 @@ private void setHeights()
             }
         }
 
+        if (!fromNeighbour && chunk != null)
+        {
+            //this ensures syncing across chunks
+            //both neighbour and diagonal
+            if (minX <= 0)
+            {
+                DigNeighbour(-1, 0, worldPosition, radius, strength);
+                if (minZ <= 0)
+                {
+                    DigNeighbour(-1, -1, worldPosition, radius, strength);
+                }
+                if (maxZ >= width)
+                {
+                    DigNeighbour(-1, 1, worldPosition, radius, strength);
+                }
+            }
+            if (maxX >= width)
+            {
+                DigNeighbour(1, 0, worldPosition, radius, strength);
+                if (minZ <= 0)
+                {
+                    DigNeighbour(1, -1, worldPosition, radius, strength);
+                }
+                if (maxZ >= width)
+                {
+                    DigNeighbour(1, 1, worldPosition, radius, strength);
+                }
+            }
+            if (minZ <= 0)
+            {
+                DigNeighbour(0, -1, worldPosition, radius, strength);
+                if (minX <= 0)
+                {
+                    DigNeighbour(-1, -1, worldPosition, radius, strength);
+                }
+                if (maxX >= width)
+                {
+                    DigNeighbour(1, -1, worldPosition, radius, strength);
+                }
+            }
+            if (maxZ >= width)
+            {
+                DigNeighbour(0, 1, worldPosition, radius, strength);
+                if (minX <= 0)
+                {
+                    DigNeighbour(-1, 1, worldPosition, radius, strength);
+                }
+                if (maxX >= width)
+                {
+                    DigNeighbour(1, 1, worldPosition, radius, strength);
+                }
+            }
+        }
+
         MarchCubes();
         SetMesh();
     }
+    public float[,] GetSide(int dx, int dz)
+    {
+        int ySize = height + heightUnderSurface + 1;
+        int w = width + 1;
+        float[,] side = new float[ySize, w];
+
+        if (dx == 1)
+        {
+            for (int y = 0; y < ySize; y++)
+                for (int z = 0; z < w; z++)
+                    side[y, z] = heights[width, y, z];
+        }
+        else if (dx == -1)
+        {
+            for (int y = 0; y < ySize; y++)
+                for (int z = 0; z < w; z++)
+                    side[y, z] = heights[0, y, z];
+        }
+        else if (dz == 1)
+        {
+            for (int y = 0; y < ySize; y++)
+                for (int x = 0; x < w; x++)
+                    side[y, x] = heights[x, y, width];
+        }
+        else if (dz == -1)
+        {
+            for (int y = 0; y < ySize; y++)
+                for (int x = 0; x < w; x++)
+                    side[y, x] = heights[x, y, 0];
+        }
+
+        return side;
+    }
 
 
+    public void SetHeightsSide(float[,] val, int dx, int dz)
+    {
+        int ySize = height + heightUnderSurface + 1;
+        int w = width + 1;
 
+        if (dx == 1)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int z = 0; z < w; z++)
+                {
+                    heights[width, y, z] = val[y, z];
+                }
+            }
+        }
+        else if (dx == -1)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int z = 0; z < w; z++)
+                {
+                    heights[0, y, z] = val[y, z];
+                }
+            }
+        }
+        else if (dz == 1)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    heights[x, y, width] = val[y, x];
+                }
+            }
+        }
+        else if (dz == -1)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    heights[x, y, 0] = val[y, x];
+                }
+            }
+        }
+        MarchCubes();
+        SetMesh();
+    }
 
 }
