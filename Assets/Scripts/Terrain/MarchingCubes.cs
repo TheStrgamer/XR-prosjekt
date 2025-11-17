@@ -50,15 +50,12 @@ public class MarchingCubes : MonoBehaviour
 
     public void SetDimensions(int width, int height, int heightUnder, float scale, Vector2Int ind)
     {
-        init();
         this.width = width;
         this.height = height;
         this.heightUnderSurface = heightUnder;
         this.scale = scale;
         this.ind = ind;
-        setHeights();
-        MarchCubes();
-        SetMesh();
+        init();
     }
 
     private IEnumerator StartAll()
