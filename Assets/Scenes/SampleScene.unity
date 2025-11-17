@@ -1113,8 +1113,8 @@ MonoBehaviour:
   chunkHeight: 16
   chunkHeightUnder: 64
   scale: 1
-  chunksX: 8
-  chunksZ: 8
+  chunksX: 6
+  chunksZ: 6
 --- !u!4 &1911134150
 Transform:
   m_ObjectHideFlags: 0
