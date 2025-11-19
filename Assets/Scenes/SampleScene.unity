@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
-  m_TagString: MainCamera
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1588,67 +1588,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1982893385}
   m_CullTransparentMesh: 1
---- !u!1001 &678248790493898598
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 7.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -17.78
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 6.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4140819466341954562, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5489355631748333976, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_Name
-      value: MarchingCubesController
-      objectReference: {fileID: 0}
-    - target: {fileID: 5489355631748333976, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1aa69cfc8af0cc34da0e782e7fe8e2ee, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1656,7 +1595,6 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 678248790493898598}
   - {fileID: 1157077919}
   - {fileID: 302879107}
   - {fileID: 1526107391}

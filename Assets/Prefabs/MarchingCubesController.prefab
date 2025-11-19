@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6390241910246693942}
   m_Layer: 0
   m_Name: MarchingCubesController
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   height: 16
   heightUnderSurface: 20
   scale: 1
-  tresshold: 0.5
+  threshold: 0.5
   noiseResolution: 0.06
   visualizeNoise: 0
   loopStart: 0
