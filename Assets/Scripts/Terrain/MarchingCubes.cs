@@ -29,6 +29,9 @@ public class MarchingCubes : MonoBehaviour
     private CubeChunks chunk;
     private Vector2Int ind;
 
+    private List<Color> colors = new List<Color>();
+
+
     void Start(){
         meshFilter = GetComponent<MeshFilter>();
         if (loopStart) StartCoroutine(StartAll());
@@ -62,7 +65,7 @@ public class MarchingCubes : MonoBehaviour
     {
         while (true){
             //setHeights();
-            MarchCubes();
+            // MarchCubes();
             SetMesh();
             yield return new WaitForSeconds(1f);
         }
@@ -71,6 +74,7 @@ public class MarchingCubes : MonoBehaviour
     private void MarchCubes()
     {
         verts.Clear();
+        colors.Clear();
         triangles.Clear();
         edgeVertexCache = new Dictionary<(int, int, int, int), int>();
 
@@ -117,6 +121,11 @@ public class MarchingCubes : MonoBehaviour
             if (!edgeVertexCache.TryGetValue(key, out int vertIndex))
             {
                 verts.Add(vertex);
+                float depthFactor = Mathf.InverseLerp(height + heightUnderSurface, 0, pos.y);
+                depthFactor = Mathf.Pow(depthFactor, 0.4f);
+                Color col = Color.Lerp(Color.white, Color.black, depthFactor);
+                colors.Add(col);
+
                 vertIndex = verts.Count - 1;
                 edgeVertexCache[key] = vertIndex;
             }
@@ -124,27 +133,29 @@ public class MarchingCubes : MonoBehaviour
             triangles.Add(vertIndex);
             edgeIndex++;
         }
+
     }
 
 
     private void SetMesh()
-{
-    Mesh mesh = new Mesh();
-    mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+    {
+        Mesh mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 
-    mesh.vertices = verts.ToArray();
-    mesh.triangles = triangles.ToArray();
-    mesh.RecalculateNormals();
-    mesh.RecalculateBounds();
+        mesh.vertices = verts.ToArray();
+        mesh.SetColors(colors);
+        mesh.triangles = triangles.ToArray();
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
 
-    meshFilter.mesh = mesh;
+        meshFilter.mesh = mesh;
 
-    if (meshCollider == null) meshCollider = GetComponent<MeshCollider>();
-    if (meshCollider != null){
-        meshCollider.sharedMesh = null;
-        meshCollider.sharedMesh = mesh;
+        if (meshCollider == null) meshCollider = GetComponent<MeshCollider>();
+        if (meshCollider != null){
+            meshCollider.sharedMesh = null;
+            meshCollider.sharedMesh = mesh;
+        }
     }
-}
 
     private int GetConfigIndex(float[] cubeCorners){
         int configIndex = 0;
