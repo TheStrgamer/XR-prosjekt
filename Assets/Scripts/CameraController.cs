@@ -15,6 +15,9 @@ public class CameraController : MonoBehaviour
     public float digRadius = 3f;
     public float digStrength = 3f;
 
+    public float coolDown = 0.2f;
+    private float currentCoolDown = 0.2f;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -40,8 +43,10 @@ public class CameraController : MonoBehaviour
 
     private void HandleDig()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        currentCoolDown -= Time.deltaTime;
+        if (Mouse.current.leftButton.isPressed && currentCoolDown <= 0)
         {
+            currentCoolDown = coolDown;
             Ray ray = new Ray(transform.position, transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, 100f))
             {
