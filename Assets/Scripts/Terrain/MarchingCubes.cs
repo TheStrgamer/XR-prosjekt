@@ -209,6 +209,58 @@ private void setHeights()
         chunk.SetNeightbourValue(ind, dx, dz);
     }
 
+    private void HandleNeighbour(Vector3 worldPosition, float radius, float strength, int minX, int maxX, int minZ, int maxZ)
+    {
+        if (minX <= 0)
+        {
+            DigNeighbour(-1, 0, worldPosition, radius, strength);
+            if (minZ <= 0)
+            {
+                DigNeighbour(-1, -1, worldPosition, radius, strength);
+            }
+            if (maxZ >= width)
+            {
+                DigNeighbour(-1, 1, worldPosition, radius, strength);
+            }
+        }
+        if (maxX >= width)
+        {
+            DigNeighbour(1, 0, worldPosition, radius, strength);
+            if (minZ <= 0)
+            {
+                DigNeighbour(1, -1, worldPosition, radius, strength);
+            }
+            if (maxZ >= width)
+            {
+                DigNeighbour(1, 1, worldPosition, radius, strength);
+            }
+        }
+        if (minZ <= 0)
+        {
+            DigNeighbour(0, -1, worldPosition, radius, strength);
+            if (minX <= 0)
+            {
+                DigNeighbour(-1, -1, worldPosition, radius, strength);
+            }
+            if (maxX >= width)
+            {
+                DigNeighbour(1, -1, worldPosition, radius, strength);
+            }
+        }
+        if (maxZ >= width)
+        {
+            DigNeighbour(0, 1, worldPosition, radius, strength);
+            if (minX <= 0)
+            {
+                DigNeighbour(-1, 1, worldPosition, radius, strength);
+            }
+            if (maxX >= width)
+            {
+                DigNeighbour(1, 1, worldPosition, radius, strength);
+            }
+        }
+    }
+
     public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
         if (heights == null) return;
@@ -254,54 +306,8 @@ private void setHeights()
         {
             //this ensures syncing across chunks
             //both neighbour and diagonal
-            if (minX <= 0)
-            {
-                DigNeighbour(-1, 0, worldPosition, radius, strength);
-                if (minZ <= 0)
-                {
-                    DigNeighbour(-1, -1, worldPosition, radius, strength);
-                }
-                if (maxZ >= width)
-                {
-                    DigNeighbour(-1, 1, worldPosition, radius, strength);
-                }
-            }
-            if (maxX >= width)
-            {
-                DigNeighbour(1, 0, worldPosition, radius, strength);
-                if (minZ <= 0)
-                {
-                    DigNeighbour(1, -1, worldPosition, radius, strength);
-                }
-                if (maxZ >= width)
-                {
-                    DigNeighbour(1, 1, worldPosition, radius, strength);
-                }
-            }
-            if (minZ <= 0)
-            {
-                DigNeighbour(0, -1, worldPosition, radius, strength);
-                if (minX <= 0)
-                {
-                    DigNeighbour(-1, -1, worldPosition, radius, strength);
-                }
-                if (maxX >= width)
-                {
-                    DigNeighbour(1, -1, worldPosition, radius, strength);
-                }
-            }
-            if (maxZ >= width)
-            {
-                DigNeighbour(0, 1, worldPosition, radius, strength);
-                if (minX <= 0)
-                {
-                    DigNeighbour(-1, 1, worldPosition, radius, strength);
-                }
-                if (maxX >= width)
-                {
-                    DigNeighbour(1, 1, worldPosition, radius, strength);
-                }
-            }
+            HandleNeighbour(worldPosition, radius, strength, minX, maxX, minZ, maxZ);
+            
         }
 
         MarchCubes();
