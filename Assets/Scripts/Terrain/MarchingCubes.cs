@@ -183,7 +183,7 @@ private void setHeights()
                 float wz = z * scale + transform.position.z;
 
                 float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height + heightUnderSurface;
-                float density = worldY - terrainHeight + heightUnderSurface;
+                float density = worldY - terrainHeight + height;
                 density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
 
                 heights[x, y, z] = density;
