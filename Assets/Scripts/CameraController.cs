@@ -18,8 +18,18 @@ public class CameraController : MonoBehaviour
     public float coolDown = 0.2f;
     private float currentCoolDown = 0.2f;
 
+    [Header("CritPoint Settings")]
+    private bool pointActive = false;
+    [SerializeField] private float critBoost = 1.25f;
+    [SerializeField] private float critPointLifetime = 5f;
+    private float currentCritLife;
+    [SerializeField] private GameObject currentCritPoint;
+    [SerializeField] private float maxDistToPoint = 0.4f;
+    Camera cam;
+
     void Start()
     {
+        cam = GetComponent<Camera>();   
         Cursor.lockState = CursorLockMode.Locked;
     }
     void Update()
@@ -27,6 +37,14 @@ public class CameraController : MonoBehaviour
         HandleMovement();
         HandleLook();
         HandleDig();
+
+        currentCritLife -= Time.deltaTime;
+        if (currentCritLife < 0)
+        {
+            currentCritPoint.SetActive(false);
+            currentCritLife = 0;
+            pointActive = false;
+        }
     }
 
     private void HandleMovement()
@@ -39,6 +57,34 @@ public class CameraController : MonoBehaviour
     {
         transform.Rotate(Vector3.up, lookInput.x * lookSpeed * Time.deltaTime, Space.World);
         transform.Rotate(Vector3.left, lookInput.y * lookSpeed * Time.deltaTime, Space.Self);
+    }
+    public bool TryPlaceCritPoint(float maxDistance = 10f, int attempts = 10)
+    {
+        Debug.Log(maxDistance + " "+ attempts);
+
+        for (int i = 0; i < attempts; i++)
+        {
+            Vector3 direction =
+                cam.transform.forward +
+                cam.transform.right * Random.Range(-0.25f, 0.25f) +
+                cam.transform.up * Random.Range(-0.2f, 0.2f);
+
+            direction.Normalize();
+
+            if (Physics.Raycast(cam.transform.position, direction, out RaycastHit hit, maxDistance))
+            {
+                if (hit.collider.CompareTag("Ground"))
+                {
+                    currentCritPoint.transform.position = hit.point;
+                    currentCritPoint.SetActive(true);
+                    pointActive = true;
+                    currentCritLife = critPointLifetime;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private void HandleDig()
@@ -57,7 +103,15 @@ public class CameraController : MonoBehaviour
                     MarchingCubes mc = c.GetComponent<MarchingCubes>();
                     if (mc != null)
                     {
-                        mc.Dig(hit.point, digRadius, digStrength);
+                        if (Vector3.Distance(c.transform.position, currentCritPoint.transform.position) < maxDistToPoint)
+                        {
+                            mc.Dig(hit.point, digRadius * critBoost, digStrength * critBoost);
+                        }
+                        else
+                        {
+                            mc.Dig(hit.point, digRadius, digStrength);
+                        }
+                        TryPlaceCritPoint(10,10);
                     }
                 }
             }
