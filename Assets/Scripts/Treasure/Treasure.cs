@@ -8,6 +8,9 @@ public class Treasure : MonoBehaviour
     private Rigidbody rb;
     private Transform playerCam;
     private bool revealed = false;
+
+    [SerializeField] private int score = 100;
+    [SerializeField] private float displayScale = 0.75f;
     void Start()
     {
         playerCam = GameObject.FindWithTag("Player").transform;
@@ -25,6 +28,7 @@ public class Treasure : MonoBehaviour
                 for (int i = 0; i < revealPoints.Count; i++)
                 {
                     // cast ray from player to point, if nothing hit, delete
+                    // when all points deleted, the treasure is visible and can get gravity.
                     RaycastHit hit;
                     Transform point = revealPoints[i];
                     Vector3 dir = point.position - playerCam.position;
@@ -49,5 +53,14 @@ public class Treasure : MonoBehaviour
             }
         }
         
+    }
+
+    public int getScore()
+    {
+        return score;
+    }
+    public float getDisplayScale()
+    {
+        return displayScale;
     }
 }

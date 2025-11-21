@@ -81,7 +81,7 @@ public class TreasureSpawner : MonoBehaviour
                 tmpTreasurePrefabs = tempList.ToArray();
             }
 
-            Instantiate(prefab, randomPos, Quaternion.identity);
+            Instantiate(prefab, randomPos, Quaternion.identity, transform);
             spawnedPositions.Add(randomPos);
             spawned++;
         }
