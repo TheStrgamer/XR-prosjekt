@@ -31,6 +31,14 @@ public class MarchingCubes : MonoBehaviour
 
     private List<Color> colors = new List<Color>();
 
+    [Header("CritPoint Settings")]
+    private bool critPointActive = false;
+    [SerializeField] private float critBoost = 1.25f;
+    [SerializeField] private float critPointLifetime = 5f;
+    private float currentCritLife;
+    [SerializeField] private GameObject currentCritPoint;
+    [SerializeField] private float maxDistToPoint = 0.4f;
+    [SerializeField] private float critPointChance = 0.75f;
 
     void Start(){
         meshFilter = GetComponent<MeshFilter>();
@@ -41,6 +49,17 @@ public class MarchingCubes : MonoBehaviour
             SetMesh();
         }
 
+    }
+
+    private void Update()
+    {
+        currentCritLife -= Time.deltaTime;
+        if (currentCritLife < 0)
+        {
+            currentCritPoint.SetActive(false);
+            currentCritLife = 0;
+            critPointActive = false;
+        }
     }
     void init()
     {
@@ -168,29 +187,29 @@ public class MarchingCubes : MonoBehaviour
 
     }
 
-private void setHeights()
-{
-    heights = new float[width + 1, height + heightUnderSurface + 1, width + 1];
-
-    for (int x = 0; x < width + 1; x++)
+    private void setHeights()
     {
-        for (int y = 0; y < height + heightUnderSurface + 1; y++)
+        heights = new float[width + 1, height + heightUnderSurface + 1, width + 1];
+
+        for (int x = 0; x < width + 1; x++)
         {
-            for (int z = 0; z < width + 1; z++)
+            for (int y = 0; y < height + heightUnderSurface + 1; y++)
             {
-                float worldY = y * scale + transform.position.y;
-                float wx = x * scale + transform.position.x;
-                float wz = z * scale + transform.position.z;
+                for (int z = 0; z < width + 1; z++)
+                {
+                    float worldY = y * scale + transform.position.y;
+                    float wx = x * scale + transform.position.x;
+                    float wz = z * scale + transform.position.z;
 
-                float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height + heightUnderSurface;
-                float density = worldY - terrainHeight + height;
-                density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
+                    float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height + heightUnderSurface;
+                    float density = worldY - terrainHeight + height;
+                    density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
 
-                heights[x, y, z] = density;
+                    heights[x, y, z] = density;
+                }
             }
         }
     }
-}
 
 
     private void OnDrawGizmosSelected()
@@ -272,10 +291,54 @@ private void setHeights()
         }
     }
 
+    private bool PlaceCritPoint(Vector3 pointCenter, float radius)
+    {
+        Transform t = meshFilter.transform;
+
+        List<(float dist, Vector3 pos)> nearVerts = new List<(float, Vector3)>();
+
+        foreach (var v in verts)
+        {
+            Vector3 wp = t.TransformPoint(v);
+            float d = (wp - pointCenter).sqrMagnitude;
+            if (d < radius*1.5f)
+            {
+                nearVerts.Add((d, wp));
+            }
+        }
+        if (nearVerts.Count == 0) { return false; }
+
+        int randomIndex = Random.Range(0, nearVerts.Count);
+        //Debug.Log(nearVerts.Count + " " + randomIndex);
+        Vector3 chosenPos = nearVerts[randomIndex].pos;
+
+        currentCritPoint.transform.position = chosenPos;
+        currentCritPoint.SetActive(true);
+        critPointActive = true;
+        currentCritLife = critPointLifetime;
+        //Debug.Log("placed at "+ currentCritPoint.transform.position);
+        return true;
+    }
+
+
+
+
     public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
         if (heights == null) return;
         if (radius <= 0f) return;
+
+        if (critPointActive == true)
+        {
+            //Debug.Log(Vector3.Distance(worldPosition, currentCritPoint.transform.position));
+            if (Vector3.Distance(worldPosition, currentCritPoint.transform.position) < maxDistToPoint)
+            {
+                radius *= critBoost;
+                strength *= critBoost;
+            }
+            critPointActive = false;
+            currentCritPoint.SetActive(false);
+        }
 
         Vector3 localPos = transform.InverseTransformPoint(worldPosition) / scale;
         float radiusInCells = Mathf.Max(0.0001f, radius / scale);
@@ -287,6 +350,8 @@ private void setHeights()
         int maxY = Mathf.Min(heights.GetLength(1) - 1, Mathf.CeilToInt(localPos.y + radiusInCells));
         int minZ = Mathf.Max(0, Mathf.FloorToInt(localPos.z - radiusInCells));
         int maxZ = Mathf.Min(heights.GetLength(2) - 1, Mathf.CeilToInt(localPos.z + radiusInCells));
+
+        List<Vector3> critPointCandidates = new List<Vector3>();
 
         for (int x = minX; x <= maxX; x++)
         {
@@ -309,20 +374,26 @@ private void setHeights()
                     float falloff = Mathf.Clamp01(1f - (dist / radiusInCells));
 
                     heights[x, y, z] = Mathf.Lerp(heights[x, y, z], -strength, falloff);
+
                 }
             }
         }
 
+        MarchCubes();
+        SetMesh();
         if (!fromNeighbour && chunk != null)
         {
             //this ensures syncing across chunks
             //both neighbour and diagonal
             HandleNeighbour(worldPosition, radius, strength, minX, maxX, minZ, maxZ);
-            
+            if (Random.Range(0, 100) <= critPointChance * 100)
+            {
+                PlaceCritPoint(worldPosition, radius);
+            }
+
         }
 
-        MarchCubes();
-        SetMesh();
+
     }
     public float[,] GetSide(int dx, int dz)
     {
