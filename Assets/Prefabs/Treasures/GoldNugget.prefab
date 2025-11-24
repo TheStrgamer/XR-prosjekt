@@ -81,7 +81,7 @@ GameObject:
   - component: {fileID: 2684472001264941250}
   m_Layer: 0
   m_Name: GoldNugget
-  m_TagString: Untagged
+  m_TagString: Treasure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -224,6 +224,8 @@ MonoBehaviour:
   - {fileID: 8728262801813103550}
   - {fileID: 483401973237520319}
   - {fileID: 8019704293563910449}
+  score: 100
+  displayScale: 0.75
 --- !u!1 &2211857461672475438
 GameObject:
   m_ObjectHideFlags: 0

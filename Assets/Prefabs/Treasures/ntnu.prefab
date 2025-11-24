@@ -259,6 +259,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e53bc74964817a64b9b5dd6241f9fcc3, type: 3}
+      propertyPath: m_TagString
+      value: Treasure
+      objectReference: {fileID: 0}
     - target: {fileID: 1129496810705857465, guid: e53bc74964817a64b9b5dd6241f9fcc3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -408,6 +412,8 @@ MonoBehaviour:
   - {fileID: 4464037166041221043}
   - {fileID: 7635046182395300446}
   - {fileID: 8525432734210426956}
+  score: 100
+  displayScale: 0.75
 --- !u!54 &8632243301148454176
 Rigidbody:
   m_ObjectHideFlags: 0
