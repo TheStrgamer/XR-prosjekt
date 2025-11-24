@@ -351,8 +351,6 @@ public class MarchingCubes : MonoBehaviour
         int minZ = Mathf.Max(0, Mathf.FloorToInt(localPos.z - radiusInCells));
         int maxZ = Mathf.Min(heights.GetLength(2) - 1, Mathf.CeilToInt(localPos.z + radiusInCells));
 
-        List<Vector3> critPointCandidates = new List<Vector3>();
-
         for (int x = minX; x <= maxX; x++)
         {
             for (int y = minY; y <= maxY; y++)
