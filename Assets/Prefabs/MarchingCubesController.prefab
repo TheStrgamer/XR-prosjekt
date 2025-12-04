@@ -56,10 +56,11 @@ MonoBehaviour:
   noiseResolution: 0.06
   visualizeNoise: 0
   loopStart: 0
-  critBoost: 2.5
+  critBoost: 2
   critPointLifetime: 5
   currentCritPoint: {fileID: 2364957678433239466}
   maxDistToPoint: 0.4
+  critPointChance: 0.75
 --- !u!33 &7539182159725249160
 MeshFilter:
   m_ObjectHideFlags: 0
