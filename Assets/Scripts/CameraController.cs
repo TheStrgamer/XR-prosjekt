@@ -53,15 +53,11 @@ public class CameraController : MonoBehaviour
             Ray ray = new Ray(transform.position, transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, 100f))
             {
-                Collider[] colliders = Physics.OverlapSphere(hit.point, digRadius);
-                foreach (Collider c in colliders)
+                //Debug.Log(c.gameObject.name);
+                MarchingCubes mc = hit.collider.GetComponent<MarchingCubes>();
+                if (mc != null)
                 {
-                    //Debug.Log(c.gameObject.name);
-                    MarchingCubes mc = c.GetComponent<MarchingCubes>();
-                    if (mc != null)
-                    {
-                        mc.Dig(hit.point, digRadius, digStrength);
-                    }
+                    mc.Dig(hit.point, digRadius, digStrength);
                 }
             }
         }

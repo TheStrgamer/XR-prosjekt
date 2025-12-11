@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MarchingCubes : MonoBehaviour
@@ -40,8 +41,15 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] private GameObject currentCritPoint;
     [SerializeField] private float maxDistToPoint = 0.4f;
     [SerializeField] private float critPointChance = 0.75f;
+    [SerializeField] private bool guidingPoints = true; //makes crit points somewhat show direction of nearest treasure
+    private static GameObject[] treasureCache;
+
+    ScoreManager scoreManager;
 
     void Start(){
+        scoreManager = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
+        if (scoreManager == null) { Debug.Log("failed to find score manager"); }
+
         meshFilter = GetComponent<MeshFilter>();
         if (loopStart) StartCoroutine(StartAll());
         else{
@@ -60,6 +68,10 @@ public class MarchingCubes : MonoBehaviour
             currentCritLife -= Time.deltaTime;
             if (currentCritLife < 0)
             {
+                if (critPointActive)
+                {
+                    scoreManager.addTimedOutPoint();
+                }
                 currentCritPoint.SetActive(false);
                 currentCritLife = 0;
                 critPointActive = false;
@@ -302,10 +314,15 @@ public class MarchingCubes : MonoBehaviour
 
         List<(float dist, Vector3 pos)> nearVerts = new List<(float, Vector3)>();
 
+        Vector3 newCenter = pointCenter;
+        if (guidingPoints)
+        {
+            newCenter += DirToNearestTreasure(pointCenter) * 2;
+        }
         foreach (var v in verts)
         {
             Vector3 wp = t.TransformPoint(v);
-            float d = (wp - pointCenter).sqrMagnitude;
+            float d = (wp - newCenter).sqrMagnitude;
             if (d < radius*1.5f)
             {
                 nearVerts.Add((d, wp));
@@ -330,16 +347,27 @@ public class MarchingCubes : MonoBehaviour
 
     public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
+        Debug.Log(
+            $"critActive={critPointActive}, pointPos={currentCritPoint.transform.position}, pointActive={currentCritPoint.activeSelf}, fromneighbour={fromNeighbour}, selfname={this.name}"
+        );
+
         if (heights == null) return;
         if (radius <= 0f) return;
 
-        if (useCritPoint && critPointActive == true)
+        if (useCritPoint && critPointActive && currentCritPoint.activeSelf)
         {
-            //Debug.Log(Vector3.Distance(worldPosition, currentCritPoint.transform.position));
-            if (Vector3.Distance(worldPosition, currentCritPoint.transform.position) < maxDistToPoint)
+        
+            Debug.Log(Vector3.Distance(worldPosition, currentCritPoint.transform.position));
+            float dist = Vector3.Distance(worldPosition, currentCritPoint.transform.position);
+            if (dist < maxDistToPoint)
             {
+                scoreManager.addPointsHit(dist);
                 radius *= critBoost;
                 strength *= critBoost;
+            } else
+            {
+                scoreManager.addPointsMiss(dist);
+
             }
             critPointActive = false;
             currentCritPoint.SetActive(false);
@@ -398,6 +426,33 @@ public class MarchingCubes : MonoBehaviour
 
 
     }
+    private Vector3 DirToNearestTreasure(Vector3 pos)
+    {
+        if (treasureCache == null || treasureCache.Length == 0)
+            treasureCache = GameObject.FindGameObjectsWithTag("Treasure");
+
+        GameObject nearest = null;
+        float closestDistSq = float.MaxValue;
+
+        foreach (GameObject t in treasureCache)
+        {
+            Vector3 diff = t.transform.position - pos;
+            float distSq = diff.sqrMagnitude;
+
+            if (distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                nearest = t;
+            }
+        }
+
+        if (nearest == null)
+            return Vector3.zero;
+
+        return (nearest.transform.position - pos).normalized;
+    }
+
+
     public float[,] GetSide(int dx, int dz)
     {
         int ySize = height + heightUnderSurface + 1;
@@ -431,7 +486,6 @@ public class MarchingCubes : MonoBehaviour
 
         return side;
     }
-
 
     public void SetHeightsSide(float[,] val, int dx, int dz)
     {

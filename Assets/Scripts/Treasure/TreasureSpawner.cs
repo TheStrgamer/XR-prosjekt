@@ -17,9 +17,13 @@ public class TreasureSpawner : MonoBehaviour
     private List<Vector3> spawnedPositions = new List<Vector3>();
     private GameObject[] tmpTreasurePrefabs;
 
+    private ScoreManager scoreManager;
+
 
     void Start()
     {
+        scoreManager = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
+        if (scoreManager == null) { Debug.Log("failed to find score manager"); }
         if (!allowDupes)
         {
             var tempList = new List<GameObject>(treasurePrefabs);
@@ -89,6 +93,10 @@ public class TreasureSpawner : MonoBehaviour
         if (spawned < treasuresCount)
         {
             Debug.LogWarning($"Could only spawn {spawned}/{treasuresCount} treasures due to space constraints.");
+        }
+        if (scoreManager != null)
+        {
+            scoreManager.setTreasureTotal(spawned);
         }
     }
 

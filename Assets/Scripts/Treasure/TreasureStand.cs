@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class TreasureStand : MonoBehaviour
 {
@@ -12,9 +13,12 @@ public class TreasureStand : MonoBehaviour
     [SerializeField] private float bobHeight = 0.25f;
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private Transform treasurePos;
+
+    ScoreManager scoreManager;
     void Start()
     {
-        
+        scoreManager = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
+        if (scoreManager == null) { Debug.Log("failed to find score manager"); }
     }
 
     // Update is called once per frame
@@ -58,5 +62,11 @@ public class TreasureStand : MonoBehaviour
         float scale = treasure.getDisplayScale();
         displayItem.transform.localScale = new Vector3(scale,scale,scale);
         displayItem.GetComponent<Collider>().enabled = false;
+
+        if (scoreManager != null)
+        {
+            scoreManager.addTreasureFound();
+            scoreManager.addScore(treasure.getScore());
+        }
     }
 }
