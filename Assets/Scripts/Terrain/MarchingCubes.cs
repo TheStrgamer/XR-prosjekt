@@ -47,8 +47,14 @@ public class MarchingCubes : MonoBehaviour
     ScoreManager scoreManager;
 
     void Start(){
-        scoreManager = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
-        if (scoreManager == null) { Debug.Log("failed to find score manager"); }
+        GameObject scoreAndSettings = GameObject.FindWithTag("ScoreManager");
+        if (scoreAndSettings == null) { Debug.Log("failed to find score and settings manager"); }
+        scoreManager = scoreAndSettings.GetComponent<ScoreManager>();
+
+        SettingsManager sm = scoreAndSettings.GetComponent<SettingsManager>();
+        sm.RegisterListener(this);
+        
+
 
         meshFilter = GetComponent<MeshFilter>();
         if (loopStart) StartCoroutine(StartAll());
@@ -347,17 +353,12 @@ public class MarchingCubes : MonoBehaviour
 
     public void Dig(Vector3 worldPosition, float radius, float strength, bool fromNeighbour = false)
     {
-        Debug.Log(
-            $"critActive={critPointActive}, pointPos={currentCritPoint.transform.position}, pointActive={currentCritPoint.activeSelf}, fromneighbour={fromNeighbour}, selfname={this.name}"
-        );
-
         if (heights == null) return;
         if (radius <= 0f) return;
 
-        if (useCritPoint && critPointActive && currentCritPoint.activeSelf)
+        if (useCritPoint && critPointActive)
         {
         
-            Debug.Log(Vector3.Distance(worldPosition, currentCritPoint.transform.position));
             float dist = Vector3.Distance(worldPosition, currentCritPoint.transform.position);
             if (dist < maxDistToPoint)
             {
@@ -536,4 +537,10 @@ public class MarchingCubes : MonoBehaviour
         SetMesh();
     }
 
+
+    public void OnSettingsUpdated(float lifetime, float hitDist)
+    {
+        critPointLifetime = lifetime;
+        maxDistToPoint = hitDist;
+    }
 }
