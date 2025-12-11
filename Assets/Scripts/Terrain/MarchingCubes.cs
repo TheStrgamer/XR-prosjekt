@@ -32,6 +32,7 @@ public class MarchingCubes : MonoBehaviour
     private List<Color> colors = new List<Color>();
 
     [Header("CritPoint Settings")]
+    [SerializeField] private bool useCritPoint = true;
     private bool critPointActive = false;
     [SerializeField] private float critBoost = 1.25f;
     [SerializeField] private float critPointLifetime = 5f;
@@ -53,12 +54,16 @@ public class MarchingCubes : MonoBehaviour
 
     private void Update()
     {
-        currentCritLife -= Time.deltaTime;
-        if (currentCritLife < 0)
+        if (useCritPoint)
         {
-            currentCritPoint.SetActive(false);
-            currentCritLife = 0;
-            critPointActive = false;
+
+            currentCritLife -= Time.deltaTime;
+            if (currentCritLife < 0)
+            {
+                currentCritPoint.SetActive(false);
+                currentCritLife = 0;
+                critPointActive = false;
+            }
         }
     }
     void init()
@@ -328,7 +333,7 @@ public class MarchingCubes : MonoBehaviour
         if (heights == null) return;
         if (radius <= 0f) return;
 
-        if (critPointActive == true)
+        if (useCritPoint && critPointActive == true)
         {
             //Debug.Log(Vector3.Distance(worldPosition, currentCritPoint.transform.position));
             if (Vector3.Distance(worldPosition, currentCritPoint.transform.position) < maxDistToPoint)
@@ -384,7 +389,7 @@ public class MarchingCubes : MonoBehaviour
             //this ensures syncing across chunks
             //both neighbour and diagonal
             HandleNeighbour(worldPosition, radius, strength, minX, maxX, minZ, maxZ);
-            if (Random.Range(0, 100) <= critPointChance * 100)
+            if (useCritPoint && Random.Range(0, 100) <= critPointChance * 100)
             {
                 PlaceCritPoint(worldPosition, radius);
             }
