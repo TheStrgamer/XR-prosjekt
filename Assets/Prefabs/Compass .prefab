@@ -348,5 +348,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreasureCompass
   compassHead: {fileID: 7086026374693689283}
-  updateNearestRate: 1
+  updateNearestRate: 0.5
   orientation: {fileID: 698206080748413085}
+  rotationSpeed: 8

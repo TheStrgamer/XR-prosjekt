@@ -18,7 +18,6 @@ public class Treasure : MonoBehaviour
         rb.isKinematic = true;
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if (!revealed)
@@ -27,8 +26,6 @@ public class Treasure : MonoBehaviour
             {
                 for (int i = 0; i < revealPoints.Count; i++)
                 {
-                    // cast ray from player to point, if nothing hit, delete
-                    // when all points deleted, the treasure is visible and can get gravity.
                     RaycastHit hit;
                     Transform point = revealPoints[i];
                     Vector3 dir = point.position - playerCam.position;
@@ -40,7 +37,7 @@ public class Treasure : MonoBehaviour
                         if (hit.collider.tag != "Ground")
                         {
                             revealPoints.Remove(point);
-                            Debug.Log("removed point " + i);
+                            Debug.Log("removed point " + i + " by hitting " + hit.collider.name);
                         }
                     }
                 }

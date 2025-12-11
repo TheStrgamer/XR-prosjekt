@@ -3075,63 +3075,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 655023332}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &4080990987874056706
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 49.180004
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 33.299995
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 58.71
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2584701323234318331, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3701315982458707356, guid: 547cec748689ade478c9266acd4e3186, type: 3}
-      propertyPath: m_Name
-      value: point
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 547cec748689ade478c9266acd4e3186, type: 3}
 --- !u!1001 &4588229519888863207
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3183,6 +3126,10 @@ PrefabInstance:
     - target: {fileID: 7988317751642245523, guid: 431c7dbc10da86c4083588b603161f57, type: 3}
       propertyPath: m_Name
       value: 'Compass '
+      objectReference: {fileID: 0}
+    - target: {fileID: 7988317751642245523, guid: 431c7dbc10da86c4083588b603161f57, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3458,7 +3405,6 @@ SceneRoots:
   - {fileID: 1526107391}
   - {fileID: 1913992634}
   - {fileID: 815945095}
-  - {fileID: 4080990987874056706}
   - {fileID: 1911134150}
   - {fileID: 495747754}
   - {fileID: 1376350811}

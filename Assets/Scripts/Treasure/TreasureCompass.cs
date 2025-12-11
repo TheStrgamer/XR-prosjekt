@@ -2,72 +2,73 @@ using UnityEngine;
 
 public class TreasureCompass : MonoBehaviour
 {
-    private Transform[] Treasures = null;
+    private Transform[] treasures = null;
     [SerializeField] private GameObject compassHead;
     [SerializeField] private float updateNearestRate = 1.0f;
     [SerializeField] private Transform orientation;
+    [SerializeField] private float rotationSpeed = 5f; // how fast the compass lerps
 
-    private float currentUpdateTime = 0.0f;
+    private float currentUpdateTime = 0f;
     private Transform nearestTreasure;
-
 
     void Start()
     {
-        findTreasures();
+        FindTreasures();
+        currentUpdateTime = updateNearestRate;
     }
 
-    void findTreasures()
+    void FindTreasures()
     {
         GameObject[] treasureObjects = GameObject.FindGameObjectsWithTag("Treasure");
-        Treasures = new Transform[treasureObjects.Length];
+        treasures = new Transform[treasureObjects.Length];
         for (int i = 0; i < treasureObjects.Length; i++)
         {
-            Treasures[i] = treasureObjects[i].transform;
+            treasures[i] = treasureObjects[i].transform;
         }
     }
-    private void Update()
+
+    void Update()
     {
         currentUpdateTime -= Time.deltaTime;
-
         if (currentUpdateTime <= 0f)
         {
             currentUpdateTime = updateNearestRate;
             FindNearestTreasure();
         }
 
+        RotateCompass();
     }
 
     void FindNearestTreasure()
     {
-        if (Treasures == null || Treasures.Length == 0 ) {
-            findTreasures();
-            return; 
+        if (treasures == null || treasures.Length == 0)
+        {
+            FindTreasures();
+            return;
         }
-        float closestDist = Mathf.Infinity;
+
+        float closestDistSq = Mathf.Infinity;
         nearestTreasure = null;
 
-        foreach (Transform t in Treasures)
+        foreach (Transform t in treasures)
         {
-            float dist = Vector3.Distance(transform.position, t.position);
-            if (dist < closestDist)
+            float distSq = (t.position - transform.position).sqrMagnitude;
+            if (distSq < closestDistSq)
             {
-                closestDist = dist;
+                closestDistSq = distSq;
                 nearestTreasure = t;
             }
         }
     }
 
-    void FixedUpdate()
+    void RotateCompass()
     {
-        if (nearestTreasure == null) { return; }
+        if (nearestTreasure == null) return;
+
         Vector3 direction = nearestTreasure.position - transform.position;
+        float signedAngle = Vector3.SignedAngle(orientation.forward, direction, orientation.up);
 
-        float signedAngle = Vector3.SignedAngle(orientation.forward, direction, Vector3.up);
-
-        Quaternion rotation = Quaternion.Euler(0, signedAngle - 90f, 0);
-
-        compassHead.transform.localRotation = rotation;
-
+        Quaternion targetRotation = Quaternion.Euler(0, signedAngle - 90f, 0);
+        compassHead.transform.localRotation = Quaternion.Lerp(compassHead.transform.localRotation, targetRotation, Time.deltaTime * rotationSpeed);
     }
-
 }
