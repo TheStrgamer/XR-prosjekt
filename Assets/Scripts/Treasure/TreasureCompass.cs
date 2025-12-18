@@ -6,7 +6,7 @@ public class TreasureCompass : MonoBehaviour
     [SerializeField] private GameObject compassHead;
     [SerializeField] private float updateNearestRate = 1.0f;
     [SerializeField] private Transform orientation;
-    [SerializeField] private float rotationSpeed = 5f; // how fast the compass lerps
+    [SerializeField] private float rotationSpeed = 5f;
 
     private float currentUpdateTime = 0f;
     private Transform nearestTreasure;
@@ -64,11 +64,25 @@ public class TreasureCompass : MonoBehaviour
     void RotateCompass()
     {
         if (nearestTreasure == null) return;
+        Vector3 worldDir = nearestTreasure.position - transform.position;
+        worldDir.y = 0f;
 
-        Vector3 direction = nearestTreasure.position - transform.position;
-        float signedAngle = Vector3.SignedAngle(orientation.forward, direction, orientation.up);
+        if (worldDir.sqrMagnitude < 0.001f) return;
 
-        Quaternion targetRotation = Quaternion.Euler(0, signedAngle - 90f, 0);
-        compassHead.transform.localRotation = Quaternion.Lerp(compassHead.transform.localRotation, targetRotation, Time.deltaTime * rotationSpeed);
+        Vector3 localDir = transform.InverseTransformDirection(worldDir);
+
+        float targetY = Mathf.Atan2(localDir.x, localDir.z) * Mathf.Rad2Deg;
+
+        float currentY = compassHead.transform.localEulerAngles.y;
+
+        float newY = Mathf.MoveTowardsAngle(
+            currentY,
+            targetY - 90f,
+            rotationSpeed * 360f * Time.deltaTime
+        );
+
+        compassHead.transform.localEulerAngles = new Vector3(0f, newY, 0f);
     }
+
+
 }
