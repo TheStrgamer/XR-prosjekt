@@ -214,25 +214,29 @@ public class MarchingCubes : MonoBehaviour
     {
         heights = new float[width + 1, height + heightUnderSurface + 1, width + 1];
 
-        for (int x = 0; x < width + 1; x++)
-        {
-            for (int y = 0; y < height + heightUnderSurface + 1; y++)
-            {
-                for (int z = 0; z < width + 1; z++)
-                {
-                    float worldY = y * scale + transform.position.y;
-                    float wx = x * scale + transform.position.x;
-                    float wz = z * scale + transform.position.z;
+        float chunkWorldX = ind.x * width * scale;
+        float chunkWorldZ = ind.y * width * scale;
 
-                    float terrainHeight = Mathf.PerlinNoise(wx * noiseResolution, wz * noiseResolution) * height + heightUnderSurface;
-                    float density = worldY - terrainHeight + height;
-                    density += (Mathf.PerlinNoise(wx * noiseResolution * 0.5f, wz * noiseResolution * 0.5f) - 0.5f) * 5f;
+        for (int x = 0; x <= width; x++)
+        {
+            for (int y = 0; y <= height + heightUnderSurface; y++)
+            {
+                for (int z = 0; z <= width; z++)
+                {
+                    float wx = (chunkWorldX + x * scale) * noiseResolution;
+                    float wz = (chunkWorldZ + z * scale) * noiseResolution;
+
+                    float terrainHeight =
+                        Mathf.PerlinNoise(wx, wz) * height + heightUnderSurface;
+
+                    float density = y - terrainHeight;
 
                     heights[x, y, z] = density;
                 }
             }
         }
     }
+
 
 
     private void OnDrawGizmosSelected()
